@@ -1,0 +1,46 @@
+﻿<Window x:Class="ImageSelector.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ImageSelector"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="550" Loaded="Window_Loaded"
+        Background="Black" KeyDown="OnKeyDownHandler">
+
+    <Grid>
+        <DockPanel Grid.Column="2" Grid.ColumnSpan="2">
+            <Menu DockPanel.Dock="Top" HorizontalAlignment="Center" VerticalAlignment="Top" Height="20">
+                <MenuItem Header="_Options" Click="MenuItem_Click" />
+            </Menu>
+        </DockPanel>
+
+        <Border Grid.Column="1" Grid.ColumnSpan="4" Name="border" Margin="10,26,10.4,27.8">
+            <Image Name="image" Source="{Binding DisplayedImage, Mode=OneWay, IsAsync=True}" Opacity="1" Margin="0,0,-0.4,0.2" />
+        </Border>
+
+        <Label Name="labelSaved" Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Red" Content="SAVED" Visibility="Hidden"></Label>
+
+        <Button x:Name="buttonPreviousImage" Content="&lt;" Width="25" Margin="0,0,0,-0.2" Click="buttonPreviousImage_Click" HorizontalAlignment="Left"
+                Background="Transparent"
+                BorderThickness="0"
+                Grid.Column="0"/>
+        <Button x:Name="buttonNextImage" Content="&gt;" Margin="0,0,0.4,-0.2" Click="buttonNextImage_Click" HorizontalAlignment="Right" Width="25"
+            Background="Transparent"
+            BorderThickness="0"
+                Grid.Column="5">
+        </Button>
+
+        <Button Grid.Column="0" Grid.ColumnSpan="3" x:Name="buttonSelectFolder" Content="{Binding ImageFolderPath}" Click="buttonSelectFolder_Click" Height="23" VerticalAlignment="Bottom"/>
+        <Button Grid.Column="3" Grid.ColumnSpan="3" x:Name="buttonSelectSaveFolder" Content="{Binding SaveFolderPath}" Click="buttonSelectSaveFolder_Click" Height="23" VerticalAlignment="Bottom"/>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*" />
+            <ColumnDefinition Width="50*" />
+            <ColumnDefinition Width="5*" />
+            <ColumnDefinition Width="5*" />
+            <ColumnDefinition Width="50*" />
+            <ColumnDefinition Width="5*" />
+        </Grid.ColumnDefinitions>
+    </Grid>
+</Window>
