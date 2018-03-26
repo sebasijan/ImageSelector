@@ -19,7 +19,8 @@
             <Image Name="image" Source="{Binding DisplayedImage, Mode=OneWay, IsAsync=True}" Opacity="1" Margin="0,0,-0.4,0.2" />
         </Border>
 
-        <Label Name="labelSaved" Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Red" Content="SAVED" Visibility="Hidden"></Label>
+        <Label Name="labelSaved" Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" 
+               VerticalAlignment="Center" Foreground="Red" Content="SAVED" Visibility="Hidden" Background="WhiteSmoke" Opacity="0.5"></Label>
 
         <Button x:Name="buttonPreviousImage" Content="&lt;" Width="25" Margin="0,0,0,-0.2" Click="buttonPreviousImage_Click" HorizontalAlignment="Left"
                 Background="Transparent"

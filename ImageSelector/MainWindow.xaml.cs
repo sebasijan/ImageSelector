@@ -25,10 +25,7 @@ namespace ImageSelector
         private Point start;
 
         // min max zoom
-        double scale = 1.0;
         double minScale = 0.4;
-        double maxScale = 200;
-
         double zoomSpeed = 0.1;
         public double ZoomSpeed
         {
@@ -84,12 +81,20 @@ namespace ImageSelector
             image.MouseLeftButtonDown += image_MouseLeftButtonDown;
             image.MouseLeftButtonUp += image_MouseLeftButtonUp;
             image.MouseMove += image_MouseMove;
-
+            
             InitialiseFolder(ConfigurationManager.AppSettings["DefaultFolder"]);
             ZoomSpeed = double.Parse(ConfigurationManager.AppSettings["ZoomSpeed"]);
             SaveFolderPath = ConfigurationManager.AppSettings["DefaultSaveFolder"];
 
             this.DataContext = this;
+
+            AppDomain currentDomain = AppDomain.CurrentDomain;
+            currentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptionHandler);
+        }
+
+        static void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs args)
+        {
+            MessageBox.Show(args.ExceptionObject.ToString());
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -110,7 +115,6 @@ namespace ImageSelector
                 SetCurrentImage(files.First());
                 currentIndex = 0;
                 lastIndex = files.Count - 1;
-
             }
             else
             {
@@ -278,7 +282,6 @@ namespace ImageSelector
         private void NextImage()
         {
             currentIndex = (currentIndex == lastIndex) ? 0 : ++currentIndex;
-            
         }
         private void PreviousImage()
         {
