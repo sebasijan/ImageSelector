@@ -10,7 +10,6 @@
         <Label x:Name="labelDefaultFolder" Content="Default Folder" HorizontalAlignment="Left" Margin="10,13,0,0" VerticalAlignment="Top"/>
         <Button x:Name="buttonDefaultFolder" Content="{Binding DefaultFolder}" Margin="10,44,9.6,0" VerticalAlignment="Top" Height="22" Click="deafultFolder_Click"/>
         
-        
         <Label x:Name="labelDefaultSaveFolder" Content="Default Save Folder" HorizontalAlignment="Left" Margin="10,79,0,0" VerticalAlignment="Top"/>
         <Button x:Name="buttonDefaultSaveFolder" Content="{Binding DefaultSaveFolder}" Margin="10,110,9.6,0" VerticalAlignment="Top" Height="22" Click="defaultSaveFolder_Click"/>
 

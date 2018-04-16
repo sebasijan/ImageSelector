@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Configuration;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using ImageSelector.Models;
 
 namespace ImageSelector
 {
@@ -67,29 +66,37 @@ namespace ImageSelector
         public MainWindow()
         {
             InitializeComponent();
-            var group = new TransformGroup();
-
-            var xform = new ScaleTransform();
-            group.Children.Add(xform);
-
-            var tt = new TranslateTransform();
-            group.Children.Add(tt);
-
-            image.RenderTransform = group;
-
-            image.MouseWheel += image_MouseWheel;
-            image.MouseLeftButtonDown += image_MouseLeftButtonDown;
-            image.MouseLeftButtonUp += image_MouseLeftButtonUp;
-            image.MouseMove += image_MouseMove;
-            
-            InitialiseFolder(ConfigurationManager.AppSettings["DefaultFolder"]);
-            ZoomSpeed = double.Parse(ConfigurationManager.AppSettings["ZoomSpeed"]);
-            SaveFolderPath = ConfigurationManager.AppSettings["DefaultSaveFolder"];
+            InitializeImage();
+            InitializeConfigurationOptions();
 
             this.DataContext = this;
 
             AppDomain currentDomain = AppDomain.CurrentDomain;
             currentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptionHandler);
+        }
+
+        private void InitializeConfigurationOptions()
+        {
+            InitialiseFolder(Config.DefaultFolder);
+            ZoomSpeed = Config.ZoomSpeed;
+            SaveFolderPath = Config.DefaultSaveFolder;
+        }
+
+        private void InitializeImage()
+        {
+            // Apply transforms
+            var groupTransform = new TransformGroup()
+            {
+                Children = new TransformCollection(new Transform[] {
+                    new ScaleTransform(),
+                    new TranslateTransform() })
+            };
+            // Register events
+            image.RenderTransform = groupTransform;
+            image.MouseWheel += image_MouseWheel;
+            image.MouseLeftButtonDown += image_MouseLeftButtonDown;
+            image.MouseLeftButtonUp += image_MouseLeftButtonUp;
+            image.MouseMove += image_MouseMove;
         }
 
         static void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs args)

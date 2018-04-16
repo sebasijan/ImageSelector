@@ -1,6 +1,6 @@
-﻿using System;
+﻿using ImageSelector.Models;
+using System;
 using System.ComponentModel;
-using System.Configuration;
 using System.Runtime.CompilerServices;
 using System.Windows;
 
@@ -11,7 +11,6 @@ namespace ImageSelector
     /// </summary>
     public partial class OptionsWindow : Window, INotifyPropertyChanged
     {
-
         double zoomSpeed;
         public double ZoomSpeed
         {
@@ -37,11 +36,11 @@ namespace ImageSelector
         {
             InitializeComponent();
 
-            DefaultFolder = ConfigurationManager.AppSettings["DefaultFolder"];
-            DefaultSaveFolder = ConfigurationManager.AppSettings["DefaultSaveFolder"];
-            ZoomSpeed = double.Parse(ConfigurationManager.AppSettings["ZoomSpeed"]);
+            DefaultFolder = Config.DefaultFolder;
+            DefaultSaveFolder = Config.DefaultSaveFolder;
+            ZoomSpeed = Config.ZoomSpeed;
 
-            this.DataContext = this;
+            DataContext = this;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -51,11 +50,7 @@ namespace ImageSelector
             var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
             if (dialog.ShowDialog(this).GetValueOrDefault())
             {
-                var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-                config.AppSettings.Settings["DefaultFolder"].Value = dialog.SelectedPath;
-                config.Save(ConfigurationSaveMode.Modified);
-                ConfigurationManager.RefreshSection("appSettings");
-
+                Config.DefaultFolder = dialog.SelectedPath;
                 DefaultFolder = dialog.SelectedPath;
             }
         }
@@ -65,11 +60,7 @@ namespace ImageSelector
             var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
             if (dialog.ShowDialog(this).GetValueOrDefault())
             {
-                var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-                config.AppSettings.Settings["DefaultSaveFolder"].Value = dialog.SelectedPath;
-                config.Save(ConfigurationSaveMode.Modified);
-                ConfigurationManager.RefreshSection("appSettings");
-
+                Config.DefaultSaveFolder = dialog.SelectedPath;
                 DefaultFolder = dialog.SelectedPath;
             }
         }

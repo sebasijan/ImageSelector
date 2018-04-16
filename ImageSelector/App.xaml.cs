@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Threading;
 
 namespace ImageSelector
@@ -8,9 +9,6 @@ namespace ImageSelector
     /// </summary>
     public partial class App : Application
     {
-        //void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
-        //{
-        //    MessageBox.Show($"ERROR\n\n{e.Exception.Message}");
-        //}
+
     }
 }
