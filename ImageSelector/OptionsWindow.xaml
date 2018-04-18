@@ -8,10 +8,10 @@
         Title="OptionsWindow" Height="300" Width="300">
     <Grid>
         <Label x:Name="labelDefaultFolder" Content="Default Folder" HorizontalAlignment="Left" Margin="10,13,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="buttonDefaultFolder" Content="{Binding DefaultFolder}" Margin="10,44,9.6,0" VerticalAlignment="Top" Height="22" Click="deafultFolder_Click"/>
+        <Button x:Name="buttonDefaultFolder" Content="{Binding DefaultFolder}" Margin="10,44,9.6,0" VerticalAlignment="Top" Height="22" Click="DefaultFolder_Click"/>
         
         <Label x:Name="labelDefaultSaveFolder" Content="Default Save Folder" HorizontalAlignment="Left" Margin="10,79,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="buttonDefaultSaveFolder" Content="{Binding DefaultSaveFolder}" Margin="10,110,9.6,0" VerticalAlignment="Top" Height="22" Click="defaultSaveFolder_Click"/>
+        <Button x:Name="buttonDefaultSaveFolder" Content="{Binding DefaultSaveFolder}" Margin="10,110,9.6,0" VerticalAlignment="Top" Height="22" Click="DefaultSaveFolder_Click"/>
 
         <!--<Label x:Name="label_Copy" Content="Zoom Speed&#xD;&#xA;" HorizontalAlignment="Left" Margin="10,152,0,0" VerticalAlignment="Top" Height="26"/>
         <TextBox Text="{Binding ZoomSpeed}" Margin="10,183,9.6,62.4"></TextBox>-->

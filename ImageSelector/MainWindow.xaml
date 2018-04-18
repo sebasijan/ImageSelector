@@ -22,18 +22,18 @@
         <Label Name="labelSaved" Grid.Column="1" Grid.ColumnSpan="6" HorizontalAlignment="Center"
                VerticalAlignment="Center" Foreground="Red" Content="SAVED" Visibility="Hidden" Background="WhiteSmoke" ></Label>
 
-        <Button x:Name="buttonPreviousImage" Content="&lt;" Width="25" Margin="0,0,0,-0.2" Click="buttonPreviousImage_Click" HorizontalAlignment="Left"
+        <Button x:Name="buttonPreviousImage" Content="&lt;" Width="25" Margin="0,0,0,-0.2" Click="ButtonPreviousImage_Click" HorizontalAlignment="Left"
                 Background="Transparent"
                 BorderThickness="0"
                 Grid.Column="0"/>
-        <Button x:Name="buttonNextImage" Content="&gt;" Margin="0,0,0.4,-0.2" Click="buttonNextImage_Click" HorizontalAlignment="Right" Width="25"
+        <Button x:Name="buttonNextImage" Content="&gt;" Margin="0,0,0.4,-0.2" Click="ButtonNextImage_Click" HorizontalAlignment="Right" Width="25"
             Background="Transparent"
             BorderThickness="0"
                 Grid.Column="5">
         </Button>
 
-        <Button Grid.Column="0" Grid.ColumnSpan="3" x:Name="buttonSelectFolder" Content="{Binding ImageFolderPath}" Click="buttonSelectFolder_Click" Height="23" VerticalAlignment="Bottom"/>
-        <Button Grid.Column="3" Grid.ColumnSpan="3" x:Name="buttonSelectSaveFolder" Content="{Binding SaveFolderPath}" Click="buttonSelectSaveFolder_Click" Height="23" VerticalAlignment="Bottom"/>
+        <Button Grid.Column="0" Grid.ColumnSpan="3" x:Name="buttonSelectFolder" Content="{Binding ImageFolderPath}" Click="ButtonSelectFolder_Click" Height="23" VerticalAlignment="Bottom"/>
+        <Button Grid.Column="3" Grid.ColumnSpan="3" x:Name="buttonSelectSaveFolder" Content="{Binding SaveFolderPath}" Click="ButtonSelectSaveFolder_Click" Height="23" VerticalAlignment="Bottom"/>
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="5*" />

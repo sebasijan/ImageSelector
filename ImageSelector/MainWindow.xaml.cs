@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using ImageSelector.Models;
+using ImageSelector.Helpers;
 
 namespace ImageSelector
 {
@@ -20,30 +21,28 @@ namespace ImageSelector
         public static RoutedCommand MyCommand = new RoutedCommand();
 
         // panning
-        private Point origin;
-        private Point start;
+        private Point _origin;
+        private Point _start;
 
         // min max zoom
-        double minScale = 0.4;
-        double zoomSpeed = 0.1;
+        private const double minScale = 0.4;
+        private const double zoomSpeed = 0.1;
         public double ZoomSpeed
         {
-            get { return zoomSpeed; }
-            set { zoomSpeed = value; NotifyPropertyChanged(); }
+            get { return Config.ZoomSpeed; }
+            set { Config.ZoomSpeed = value; NotifyPropertyChanged(); }
         }
 
-        private string imageFolderPath;
         public string ImageFolderPath
         {
-            get { return imageFolderPath; }
-            private set { imageFolderPath = value; NotifyPropertyChanged(); }
+            get { return Config.DefaultFolder; }
+            private set { Config.DefaultFolder = value; NotifyPropertyChanged(); }
         }
 
-        private string saveFolderPath;
         public string SaveFolderPath
         {
-            get { return saveFolderPath; }
-            private set { saveFolderPath = value; NotifyPropertyChanged(); }
+            get { return Config.DefaultSaveFolder; }
+            private set { Config.DefaultSaveFolder = value; NotifyPropertyChanged(); }
         }
 
         private string currentImagePath;
@@ -77,7 +76,7 @@ namespace ImageSelector
 
         private void InitializeConfigurationOptions()
         {
-            InitialiseFolder(Config.DefaultFolder);
+            InitialiseFolder();
             ZoomSpeed = Config.ZoomSpeed;
             SaveFolderPath = Config.DefaultSaveFolder;
         }
@@ -93,10 +92,10 @@ namespace ImageSelector
             };
             // Register events
             image.RenderTransform = groupTransform;
-            image.MouseWheel += image_MouseWheel;
-            image.MouseLeftButtonDown += image_MouseLeftButtonDown;
-            image.MouseLeftButtonUp += image_MouseLeftButtonUp;
-            image.MouseMove += image_MouseMove;
+            image.MouseWheel += Image_MouseWheel;
+            image.MouseLeftButtonDown += Image_MouseLeftButtonDown;
+            image.MouseLeftButtonUp += Image_MouseLeftButtonUp;
+            image.MouseMove += Image_MouseMove;
         }
 
         static void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs args)
@@ -108,9 +107,8 @@ namespace ImageSelector
         {
         }
 
-        private void InitialiseFolder(string folderPath)
+        private void InitialiseFolder()
         {
-            imageFolderPath = folderPath;
             imageSources = new List<ImageSource>();
 
             if (Directory.Exists(ImageFolderPath))
@@ -119,7 +117,14 @@ namespace ImageSelector
                     .Where(f => imageExtensions.Contains(Path.GetExtension(f), StringComparer.OrdinalIgnoreCase))
                     .ToList();
 
-                SetCurrentImage(files.First());
+                if (files.Count > 0)
+                {
+                    SetCurrentImage(files.First());
+                }
+                else
+                {
+                    SetCurrentImage(string.Empty);
+                }
                 currentIndex = 0;
                 lastIndex = files.Count - 1;
             }
@@ -132,39 +137,25 @@ namespace ImageSelector
         private void SetCurrentImage(string filePath)
         {
             DisplayedImage = filePath;
-            ResetImageView();
+            Picture.ResetView(image);
         }
 
         private void SetCurrentImage(int fileIndex)
         {
             image.Source = imageSources[fileIndex];
-
-            ResetImageView();
-        }
-
-        private void ResetImageView()
-        {
-            // reset zoom
-            var transformGroup = (TransformGroup)image.RenderTransform;
-            var transform = (ScaleTransform)transformGroup.Children[0];
-            transform.ScaleX = 1.0;
-            transform.ScaleY = 1.0;
-            // reset pan
-            var tt = (TranslateTransform)((TransformGroup)image.RenderTransform).Children.First(tr => tr is TranslateTransform);
-            tt.X = 0;
-            tt.Y = 0;
+            Picture.ResetView(image);
         }
 
         // Buttons
-        private void buttonNextImage_Click(object sender, RoutedEventArgs e)
+        private void ButtonNextImage_Click(object sender, RoutedEventArgs e)
         {
             ChangeImage(Direction.Next);
         }
-        private void buttonPreviousImage_Click(object sender, RoutedEventArgs e)
+        private void ButtonPreviousImage_Click(object sender, RoutedEventArgs e)
         {
             ChangeImage(Direction.Previous);
         }
-        private void buttonSelectFolder_Click(object sender, RoutedEventArgs e)
+        private void ButtonSelectFolder_Click(object sender, RoutedEventArgs e)
         {
             var currentFolder = buttonSelectFolder.Content;
 
@@ -172,10 +163,10 @@ namespace ImageSelector
             if (dialog.ShowDialog(this).GetValueOrDefault())
             {
                 buttonSelectFolder.Content = dialog.SelectedPath;
-                InitialiseFolder(dialog.SelectedPath);
+                InitialiseFolder();
             }
         }
-        private void buttonSelectSaveFolder_Click(object sender, RoutedEventArgs e)
+        private void ButtonSelectSaveFolder_Click(object sender, RoutedEventArgs e)
         {
             var currentFolder = buttonSelectSaveFolder.Content;
 
@@ -193,27 +184,27 @@ namespace ImageSelector
         }
 
         // Image Pan and zoom events
-        private void image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             image.ReleaseMouseCapture();
         }
-        private void image_MouseMove(object sender, MouseEventArgs e)
+        private void Image_MouseMove(object sender, MouseEventArgs e)
         {
             if (!image.IsMouseCaptured) return;
 
             var tt = (TranslateTransform)((TransformGroup)image.RenderTransform).Children.First(tr => tr is TranslateTransform);
-            Vector v = start - e.GetPosition(border);
-            tt.X = origin.X - v.X;
-            tt.Y = origin.Y - v.Y;
+            Vector v = _start - e.GetPosition(border);
+            tt.X = _origin.X - v.X;
+            tt.Y = _origin.Y - v.Y;
         }
-        private void image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             image.CaptureMouse();
             var tt = (TranslateTransform)((TransformGroup)image.RenderTransform).Children.First(tr => tr is TranslateTransform);
-            start = e.GetPosition(border);
-            origin = new Point(tt.X, tt.Y);
+            _start = e.GetPosition(border);
+            _origin = new Point(tt.X, tt.Y);
         }
-        private void image_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void Image_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             var transformGroup = (TransformGroup)image.RenderTransform;
             var transform = (ScaleTransform)transformGroup.Children[0];
@@ -297,9 +288,6 @@ namespace ImageSelector
 
         enum Direction { Previous, Next }
 
-        // This method is called by the Set accessor of each property.
-        // The CallerMemberName attribute that is applied to the optional propertyName
-        // parameter causes the property name of the caller to be substituted as an argument.
         public void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
