@@ -38,12 +38,12 @@ namespace ImageSelector
 
         private void DefaultFolder_Click(object sender, RoutedEventArgs e)
         {
-            DefaultFolder = Folder.Select(this);
+            DefaultFolder = BrowserDialog.SelectFile(this);
         }
 
         private void DefaultSaveFolder_Click(object sender, RoutedEventArgs e)
         {
-            DefaultSaveFolder = Folder.Select(this);
+            DefaultSaveFolder = BrowserDialog.SelectFile(this);
         }
 
         public void NotifyPropertyChanged([CallerMemberName] String propertyName = "")

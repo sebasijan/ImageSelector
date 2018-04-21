@@ -65,23 +65,55 @@ namespace ImageSelector
         public MainWindow()
         {
             InitializeComponent();
-            InitializeImage();
-            InitializeConfigurationOptions();
+            InitialiseImage();
+            InitialiseConfigurationOptions();
 
             this.DataContext = this;
 
             AppDomain currentDomain = AppDomain.CurrentDomain;
             currentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptionHandler);
         }
-
-        private void InitializeConfigurationOptions()
+        
+        private void InitialiseConfigurationOptions()
         {
             InitialiseFolder();
             ZoomSpeed = Config.ZoomSpeed;
             SaveFolderPath = Config.DefaultSaveFolder;
         }
+        private void InitialiseFolder(string selectedFile ="")
+        {
+            if (!string.IsNullOrEmpty(selectedFile))
+            {
+                ImageFolderPath = new FileInfo(selectedFile).DirectoryName;
+            }
 
-        private void InitializeImage()
+            if (Directory.Exists(ImageFolderPath))
+            {
+                files = Directory.EnumerateFiles(ImageFolderPath)
+                    .Where(f => imageExtensions.Contains(Path.GetExtension(f), StringComparer.OrdinalIgnoreCase))
+                    .ToList();
+
+                if (string.IsNullOrEmpty(selectedFile))
+                {
+                    if (files.Count > 0)
+                        SetCurrentImage(files.First());
+
+                    currentIndex = 0;
+                    lastIndex = files.Count - 1;
+                }
+                else
+                {
+                    SetCurrentImage(files.FirstOrDefault(f => f == selectedFile));
+                    currentIndex = files.IndexOf(selectedFile);
+                    lastIndex = files.Count - 1;
+                }
+            }
+            else
+            {
+                ImageFolderPath = string.Empty;
+            }
+        }
+        private void InitialiseImage()
         {
             // Apply transforms
             var groupTransform = new TransformGroup()
@@ -107,118 +139,10 @@ namespace ImageSelector
         {
         }
 
-        private void InitialiseFolder()
-        {
-            imageSources = new List<ImageSource>();
-
-            if (Directory.Exists(ImageFolderPath))
-            {
-                files = Directory.EnumerateFiles(ImageFolderPath)
-                    .Where(f => imageExtensions.Contains(Path.GetExtension(f), StringComparer.OrdinalIgnoreCase))
-                    .ToList();
-
-                if (files.Count > 0)
-                {
-                    SetCurrentImage(files.First());
-                }
-                else
-                {
-                    SetCurrentImage(string.Empty);
-                }
-                currentIndex = 0;
-                lastIndex = files.Count - 1;
-            }
-            else
-            {
-                ImageFolderPath = "PATH NOT FOUND";
-            }
-        }
-
         private void SetCurrentImage(string filePath)
         {
             DisplayedImage = filePath;
             Picture.ResetView(image);
-        }
-
-        private void SetCurrentImage(int fileIndex)
-        {
-            image.Source = imageSources[fileIndex];
-            Picture.ResetView(image);
-        }
-
-        // Buttons
-        private void ButtonNextImage_Click(object sender, RoutedEventArgs e)
-        {
-            ChangeImage(Direction.Next);
-        }
-        private void ButtonPreviousImage_Click(object sender, RoutedEventArgs e)
-        {
-            ChangeImage(Direction.Previous);
-        }
-        private void ButtonSelectFolder_Click(object sender, RoutedEventArgs e)
-        {
-            var currentFolder = buttonSelectFolder.Content;
-
-            var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
-            if (dialog.ShowDialog(this).GetValueOrDefault())
-            {
-                buttonSelectFolder.Content = dialog.SelectedPath;
-                InitialiseFolder();
-            }
-        }
-        private void ButtonSelectSaveFolder_Click(object sender, RoutedEventArgs e)
-        {
-            var currentFolder = buttonSelectSaveFolder.Content;
-
-            var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
-            if (dialog.ShowDialog(this).GetValueOrDefault())
-            {
-                buttonSelectSaveFolder.Content = dialog.SelectedPath;
-                SaveFolderPath = dialog.SelectedPath;
-            }
-        }
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            var optionsWindow = new OptionsWindow();
-            optionsWindow.ShowDialog();
-        }
-
-        // Image Pan and zoom events
-        private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            image.ReleaseMouseCapture();
-        }
-        private void Image_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (!image.IsMouseCaptured) return;
-
-            var tt = (TranslateTransform)((TransformGroup)image.RenderTransform).Children.First(tr => tr is TranslateTransform);
-            Vector v = _start - e.GetPosition(border);
-            tt.X = _origin.X - v.X;
-            tt.Y = _origin.Y - v.Y;
-        }
-        private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            image.CaptureMouse();
-            var tt = (TranslateTransform)((TransformGroup)image.RenderTransform).Children.First(tr => tr is TranslateTransform);
-            _start = e.GetPosition(border);
-            _origin = new Point(tt.X, tt.Y);
-        }
-        private void Image_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            var transformGroup = (TransformGroup)image.RenderTransform;
-            var transform = (ScaleTransform)transformGroup.Children[0];
-            var pos1 = e.GetPosition(image);
-            double zoom = e.Delta > 0 ? ZoomSpeed : -ZoomSpeed;
-
-            if (!(transform.ScaleX < minScale) || zoom > 0) 
-            {
-                transform.ScaleX += zoom;
-                transform.ScaleY += zoom;
-
-                transform.CenterX = pos1.X;
-                transform.CenterY = pos1.Y;
-            }
         }
 
         // keyboad shortcuts
@@ -239,7 +163,6 @@ namespace ImageSelector
                     break;
             }
         }
-
         private void SaveImage()
         {
             var fileName = Path.GetFileName(currentImagePath);
@@ -274,7 +197,10 @@ namespace ImageSelector
                 }
             }
 
-            SetCurrentImage(files[currentIndex]);
+            if (files.Count > 0)
+            {
+                SetCurrentImage(files[currentIndex]);
+            }
         }
 
         private void NextImage()
